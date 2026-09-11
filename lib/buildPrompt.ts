@@ -14,10 +14,22 @@ function describeStyle(data: TripFormData): string {
   return parts.join(" ");
 }
 
-export function buildPrompt(data: TripFormData): string {
+export function buildPrompt(data: TripFormData, searchContext?: string | null): string {
   const currency = data.currency === "Other" ? data.customCurrency || "local currency" : data.currency;
   const styleDescription = describeStyle(data);
   const avoidList = data.avoid?.trim() || "Nothing specific stated.";
+
+  const searchSection = searchContext
+    ? `\nLIVE SEARCH RESULTS
+The following were pulled from a real-time web search just now. Prefer these
+specific, real place names over anything you'd otherwise guess, when they fit
+the traveler's style and budget. These are still just search snippets, not
+confirmed prices or availability — still flag booking-critical details per
+the constraints below rather than stating them as certain.
+
+${searchContext}
+`
+    : "";
 
   return `ROLE
 You are an expert local-knowledge travel planner. You prioritize realistic
@@ -31,7 +43,7 @@ Trip details:
 - Budget: ${data.budgetPerDay} ${currency} per day, INCLUDING accommodation
 - Travel style: ${styleDescription}
 - Things to avoid: ${avoidList}
-
+${searchSection}
 TASK
 Build a day-by-day itinerary for the full length of stay. For EACH day, include:
 1. Where to stay that night (specific neighborhood or property type, with an estimated nightly cost)

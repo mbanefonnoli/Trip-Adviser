@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { buildPrompt } from "@/lib/buildPrompt";
+import { buildSearchContext } from "@/lib/searchWeb";
 import type { ItineraryResponse, TripFormData } from "@/lib/types";
 
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 function isValidTripFormData(body: unknown): body is TripFormData {
   if (!body || typeof body !== "object") return false;
@@ -56,7 +57,30 @@ export async function POST(req: Request) {
   }
 
   const client = new OpenAI({ baseURL: "https://api.deepseek.com", apiKey });
-  const prompt = buildPrompt(body);
+
+  let searchContext: string | null = null;
+  const tavilyKey = process.env.TAVILY_API_KEY;
+  if (tavilyKey) {
+    try {
+      searchContext = await buildSearchContext({
+        destination: body.destination,
+        budgetPerDay: body.budgetPerDay,
+        currency: body.currency,
+        groupType: body.groupType,
+        vibe: body.vibe,
+        pace: body.pace,
+        interests: body.interests,
+        avoid: body.avoid,
+        apiKey: tavilyKey,
+      });
+    } catch {
+      // Live search is an enhancement, not a hard requirement — fall back to
+      // trained-knowledge-only generation rather than failing the request.
+      searchContext = null;
+    }
+  }
+
+  const prompt = buildPrompt(body, searchContext);
 
   try {
     const completion = await client.chat.completions.create({
