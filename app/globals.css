@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --surface: #fbf9f5;
+  --surface-alt: #fef8f6;
+  --container: #f8f2f0;
+  --container-alt: #ffffff;
+  --border: #e8e2de;
+  --border-alt: #e5e0dc;
+  --ink: #1c1917;
+  --ink-muted: #78716c;
+  --brand: #c85a32;
+  --brand-hover: #b34e2a;
+  --sage-bg: #e6f4ea;
+  --sage-ink: #0d6832;
+  --amber-bg: #fdf2e9;
+  --amber-ink: #c85a32;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-container: var(--container);
+  --color-container-alt: var(--container-alt);
+  --color-border: var(--border);
+  --color-border-alt: var(--border-alt);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-sage-bg: var(--sage-bg);
+  --color-sage-ink: var(--sage-ink);
+  --color-amber-bg: var(--amber-bg);
+  --color-amber-ink: var(--amber-ink);
+
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}
